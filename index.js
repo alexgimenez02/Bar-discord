@@ -6,7 +6,8 @@ const Discord = require("discord.js")
 
 const bot = new Discord.Client();
 
-var users = {};
+
+var users = lecturaTXT();
 
 bot.on('ready', () =>{
     console.log('Esta online perros!');
@@ -75,7 +76,7 @@ bot.on('message', msg=>{
                     user_dict[bebida] = 1;
                 }
                 
-                //escrituraArchivo(user,users[user][bebida],msg);
+                escrituraArchivo(user,users[user][bebida],msg);
             });
             
         }else if(msg.content === "!help"){ //Ir actualizando WIP
@@ -88,19 +89,19 @@ bot.on('message', msg=>{
             msg.channel.send("Aquí tienes tu gif: \n",{files: ["Gifs/"+gifs[(Math.random() * (gifs.length)) << 0]]} )
         }else if(msg.content === "!carta"){msg.channel.send("Esto es lo que tenemos: Coca-cola, Coca-cola light, Coca-cola Zero, Fanta Naranja, Fanta Limon, Sprite, Schweppes, Estrella Damm y Voll Damm.");}
         else if(msg.content === "!mememan"){
-            //msg.channel.send("WIP");
             const folder = 'Mememan';
             const fs = require('fs');
             var memes = [];
             fs.readdirSync(folder).forEach(file => {
                 memes.push(file);
             });
-            msg.channel.send("Que meme quieres? (envia !cuales para saber que memes hay)");
+            msg.channel.send("Que meme quieres? (envia !cuales para saber que memes hay o envia !random para enviar uno aleatorio)");
             const coll = new Discord.MessageCollector(msg.channel, m => m.author.id === msg.author.id, { time: 10000 });
             coll.on('collect',msg =>{
                 if(memes.includes(msg.content)){msg.channel.send({files: ["Mememan/"+msg.content]});}
                 else if(msg.content === "!cuales"){msg.member.send(memes);
                     msg.member.send("Copia el meme que quieras enviar al servidor");}
+                else if(msg.content === "!random"){msg.channel.send({files: ["Mememan/"+memes[(Math.random()*memes.length) << 0]]});}
                 else{msg.channel.send("Ese meme no lo tenemos, lo siento");}
             });
         }else if(msg.author.bot){ return;} //Evita que el bot se responda a si mismo con leer un solo !
@@ -123,5 +124,31 @@ function escrituraArchivo(user,numero,msg){
     //Por el momento, la escritura de archivo no esta 100% bien hecha, pero la idea es guardar cada usuario en un archivo diferente, y que cada vez que pida
     //el archivo se actualize con lo que ha pedido
 }
+function lecturaTXT(){
+    const fs = require('fs');
+    var users = {};
 
+    fs.readdirSync("Users/").forEach(file => {
+        
+        var actualFile = fs.readFileSync("Users/"+file,{encoding : 'utf8', flag: 'r'});
+        var data = actualFile.split("\r\n");
+        var arrayData = [];
+        data.forEach(element => {
+            var secondData = element.split(":");
+            arrayData.push(secondData);
+        });
+        var user = file.split(".");
+        if(!(user[0] in users)){users[user[0]] = {};}
+        //console.log(users);
+        arrayData.forEach(key =>{
+            //console.log(key);
+            users[user[0]][key[0]] = parseInt(key[1],'10');
+            //console.log(users);
+        });
+    });
+
+
+
+    return users;
+}
 bot.login(token);

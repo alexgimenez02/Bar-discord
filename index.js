@@ -6,6 +6,8 @@ const Discord = require("discord.js")
 
 const bot = new Discord.Client();
 
+var users = {};
+
 bot.on('ready', () =>{
     console.log('Esta online perros!');
 })
@@ -23,7 +25,7 @@ bot.on('message', msg=>{
         }else if(msg.content === '!bar'){ //Retocar el tema de productos sea un diccionario o un objeto que te devuelva la foto
             var productos = ["Coca-cola","Coca-cola light","Coca-cola Zero","Fanta Naranja", "Fanta Limon","Sprite","Schweppes","Estrella Damm","Voll Damm"];
             msg.reply("Que quieres guapetón?");      
-            const coll = new Discord.MessageCollector(msg.channel, m => m.author.id === msg.author.id, { time: 10000 });
+            const coll = new Discord.MessageCollector(msg.channel, m => m.author.id === msg.author.id, { time: 5000 });
             coll.on('collect',msg =>{
                 switch(msg.content){ //Quizas un switch sea tope semado, pero algo es algo bro, quizas no lo parece, pero le estoy metiendo ganas a intentar que este trasto funcione
                     case productos[0]:
@@ -57,18 +59,23 @@ bot.on('message', msg=>{
                         msg.reply("De eso no tenemos precioso.");
                         break;
                 }
-                /*var fs = require("fs");
-                try{
-                    if(fs.existsSync("Users/"+msg.author.username+".txt")){var file = fs.readFileSync("Users/"+msg.author.id+".txt", "utf8");
+                
+                var bebida = String(msg.content);
+                var user = String(msg.author.username);
+                if(user in users){
+                    var user_dict = users[user];
+                    if(bebida in users[user]){
+                        user_dict[bebida] += 1;
                     }else{
-                        console.log("Nuevo usuario usando el bar");
+                        user_dict[bebida] = 1;
                     }
-                }catch(err){console.log(err)}
-                fs.writeFile("Users/"+msg.author.username+".txt", msg.content, function (err){
-                    if(err) return console.log(err);
-                });*/
-                //Por el momento, la escritura de archivo no esta 100% bien hecha, pero la idea es guardar cada usuario en un archivo diferente, y que cada vez que pida
-                //el archivo se actualize con lo que ha pedido
+                }else{
+                    users[user] = {};
+                    var user_dict = users[user];
+                    user_dict[bebida] = 1;
+                }
+                
+                //escrituraArchivo(user,users[user][bebida],msg);
             });
             
         }else if(msg.content === "!help"){ //Ir actualizando WIP
@@ -101,5 +108,20 @@ bot.on('message', msg=>{
         else{msg.reply("lo siento, no es un comando válido, gilipollas");}
     }
 })
+
+function escrituraArchivo(user,numero,msg){
+    var fs = require("fs");
+    try{
+        if(fs.existsSync("Users/"+user+".txt")){var file = fs.readFileSync("Users/"+user+".txt", "utf8");
+        }else{
+            console.log("Nuevo usuario usando el bar");
+        }
+    }catch(err){console.log(err)}
+    fs.writeFile("Users/"+user+".txt", msg.content + ":" + numero, function (err){
+        if(err) return console.log(err);
+    });
+    //Por el momento, la escritura de archivo no esta 100% bien hecha, pero la idea es guardar cada usuario en un archivo diferente, y que cada vez que pida
+    //el archivo se actualize con lo que ha pedido
+}
 
 bot.login(token);

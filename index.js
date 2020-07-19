@@ -105,11 +105,27 @@ bot.on('message', msg=>{
                 else if(msg.content === "!random"){msg.channel.send({files: ["Mememan/"+memes[(Math.random()*memes.length) << 0]]});}
                 else{msg.channel.send("Ese meme no lo tenemos, lo siento");}
             });
-        }else if(msg.author.bot){ return;} //Evita que el bot se responda a si mismo con leer un solo !
+        }else if(msg.content === "!perfil"){
+            const keys = Object.keys(users[msg.author.username]);
+            const user_dict = users[msg.author.username];
+            let embed = new Discord.MessageEmbed();
+            embed.setImage(msg.author.avatarURL());
+            embed.addField("Usuario",msg.author.username);
+            var embedarray = [];
+            for(i = 0;i<keys.length;i++){
+                embedarray[i]=String(keys[i])+" : " +String(user_dict[keys[i]]);
+            }
+            embed.addField("Bebidas consumidas",embedarray);
+            embed.setColor('#275BF0');
+            msg.channel.send(embed);
+        }
+        else if(msg.author.bot){ return;} //Evita que el bot se responda a si mismo con leer un solo !
         else if(msg.mentions){return;}
         else{msg.reply("lo siento, no es un comando válido, gilipollas");}
     }
 })
+
+
 
 function escrituraArchivo(user,numero,msg){
     var fs = require("fs"); //Llamada a file system, sin esto no tenemos archivos a escribir

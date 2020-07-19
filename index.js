@@ -112,65 +112,56 @@ bot.on('message', msg=>{
 })
 
 function escrituraArchivo(user,numero,msg){
-    var fs = require("fs");
+    var fs = require("fs"); //Llamada a file system, sin esto no tenemos archivos a escribir
     
-    try{
-        if(fs.existsSync("Users/"+user+".txt")){
-            var file = fs.readFileSync("Users/"+user+".txt", {encoding: "utf8",flag: 'r+'});
-            if(file.includes(msg.content)){
+    try{ //Si no lee bien el archivo o si tiene algun fallo durante la ejecucion, digamos que petara
+        if(fs.existsSync("Users/"+user+".txt")){ //Comprueba si existe (basicamente es una repeticion del try ahora que )
+            var file = fs.readFileSync("Users/"+user+".txt", {encoding: "utf8",flag: 'r+'}); //Texto leido y para editar
+            if(file.includes(msg.content)){ //Si la bebida esta incluida en el texto simplemente le suma 1 al numero
                 var splited_file = file.split("\n");
                 var file_string = "";
-                var i = 0;
-                splited_file.forEach(element =>{
-                    var keys_value = element.split(":");
-                    if(msg.content === keys_value[0]){
-                        keys_value[1] = parseInt(keys_value[1],'10') + 1;
-                    }
+                var i = 0; //Esto es para saber cual es el primer elemento, un contador sencillo
+                splited_file.forEach(element =>{ //Esto va añadiendo a cada bebida la cantidad, si ha de ser cambiada, aumenta en 1
+                    var keys_value = element.split(":"); 
+                    if(msg.content === keys_value[0]){keys_value[1] = parseInt(keys_value[1],'10') + 1;}
                     if(i === 0){file_string += keys_value[0]+":"+keys_value[1];}
                     else{file_string += "\n"+ keys_value[0]+":"+keys_value[1];}
-                    
-                    i = i + 1;
+                    i = i + 1; //Aumenta el contador, realmente no tiene otro uso que para el primer valor
                 });
-                fs.writeFileSync("Users/"+user+".txt",file_string);
+                fs.writeFileSync("Users/"+user+".txt",file_string); //Reescribe el archivo a partir del texto modificado
             }else{
-                file += "\n"+msg.content+":"+numero;
+                file += "\n"+msg.content+":"+numero; //Sino simplemente añade la bebida a la lista de bebidas
                 fs.writeFileSync("Users/"+user+".txt",file);
             }
         }else{
-            console.log("Nuevo usuario usando el bar");
-            fs.writeFileSync("Users/"+user+".txt", msg.content + ":" + numero), function(err){
-                if(err) return console.log(err);
+            console.log("Nuevo usuario usando el bar"); //Si es un nuevo usuario
+            fs.writeFileSync("Users/"+user+".txt", msg.content + ":" + numero), function(err){ //Crea el fichero con el contenido y el numero
+                if(err) return console.log(err); //Si hay algun error nos lo dice por consola
             }
         }
-    }catch(err){console.log(err)}
-    //Por el momento, la escritura de archivo no esta 100% bien hecha, pero la idea es guardar cada usuario en un archivo diferente, y que cada vez que pida
-    //el archivo se actualize con lo que ha pedido
+    }catch(err){console.log(err)} //En el caso de que haya errores, se dicen por consola
 }
-function lecturaTXT(){
+function lecturaTXT(){ //Lee cada base de datos de cada persona
     const fs = require('fs');
-    var users = {};
+    var users = {}; //Crea un diccionario para guardar cada usuario
 
-    fs.readdirSync("Users/").forEach(file => {
+    fs.readdirSync("Users/").forEach(file => { //Por cada fichero
         
-        var actualFile = fs.readFileSync("Users/"+file,{encoding : 'utf8', flag: 'r'});
-        var data = actualFile.split("\r\n");
-        var arrayData = [];
+        var actualFile = fs.readFileSync("Users/"+file,{encoding : 'utf8', flag: 'r'}); //Lo lee
+        var data = actualFile.split("\r\n"); //Guarda los datos
+        var arrayData = []; 
         data.forEach(element => {
-            var secondData = element.split(":");
+            var secondData = element.split(":"); //Separa la llave del diccionario de el valor que tiene
             arrayData.push(secondData);
         });
-        var user = file.split(".");
-        if(!(user[0] in users)){users[user[0]] = {};}
+        var user = file.split("."); //Hace un ultimo split para separar el txt del usuario
+        if(!(user[0] in users)){users[user[0]] = {};} //Si no esta ya creado crea el diccionario del propio usuario
         
-        arrayData.forEach(key =>{
-            
-            users[user[0]][key[0]] = parseInt(key[1],'10');
-            
+        arrayData.forEach(key =>{ //Añade cada key con su valor en el diccionario del usuario
+            users[user[0]][key[0]] = parseInt(key[1],'10'); 
         });
     });
-
-
-
-    return users;
+    return users; //Devuelve el diccionario
 }
+
 bot.login(token);

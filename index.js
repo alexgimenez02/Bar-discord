@@ -58,7 +58,7 @@ bot.on('message', msg=>{
                         break;
                     default:
                         msg.reply("De eso no tenemos precioso.");
-                        break;
+                        return;
                 }
                 
                 var bebida = String(msg.content);
@@ -99,7 +99,8 @@ bot.on('message', msg=>{
             const coll = new Discord.MessageCollector(msg.channel, m => m.author.id === msg.author.id, { time: 10000 });
             coll.on('collect',msg =>{
                 if(memes.includes(msg.content)){msg.channel.send({files: ["Mememan/"+msg.content]});}
-                else if(msg.content === "!cuales"){msg.member.send(memes);
+                else if(msg.content === "!cuales"){
+                    msg.member.send(memes);
                     msg.member.send("Copia el meme que quieras enviar al servidor");}
                 else if(msg.content === "!random"){msg.channel.send({files: ["Mememan/"+memes[(Math.random()*memes.length) << 0]]});}
                 else{msg.channel.send("Ese meme no lo tenemos, lo siento");}
@@ -112,15 +113,36 @@ bot.on('message', msg=>{
 
 function escrituraArchivo(user,numero,msg){
     var fs = require("fs");
+    
     try{
-        if(fs.existsSync("Users/"+user+".txt")){var file = fs.readFileSync("Users/"+user+".txt", "utf8");
+        if(fs.existsSync("Users/"+user+".txt")){
+            var file = fs.readFileSync("Users/"+user+".txt", {encoding: "utf8",flag: 'r+'});
+            if(file.includes(msg.content)){
+                var splited_file = file.split("\n");
+                var file_string = "";
+                var i = 0;
+                splited_file.forEach(element =>{
+                    var keys_value = element.split(":");
+                    if(msg.content === keys_value[0]){
+                        keys_value[1] = parseInt(keys_value[1],'10') + 1;
+                    }
+                    if(i === 0){file_string += keys_value[0]+":"+keys_value[1];}
+                    else{file_string += "\n"+ keys_value[0]+":"+keys_value[1];}
+                    
+                    i = i + 1;
+                });
+                fs.writeFileSync("Users/"+user+".txt",file_string);
+            }else{
+                file += "\n"+msg.content+":"+numero;
+                fs.writeFileSync("Users/"+user+".txt",file);
+            }
         }else{
             console.log("Nuevo usuario usando el bar");
+            fs.writeFileSync("Users/"+user+".txt", msg.content + ":" + numero), function(err){
+                if(err) return console.log(err);
+            }
         }
     }catch(err){console.log(err)}
-    fs.writeFile("Users/"+user+".txt", msg.content + ":" + numero, function (err){
-        if(err) return console.log(err);
-    });
     //Por el momento, la escritura de archivo no esta 100% bien hecha, pero la idea es guardar cada usuario en un archivo diferente, y que cada vez que pida
     //el archivo se actualize con lo que ha pedido
 }

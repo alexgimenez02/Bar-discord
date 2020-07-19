@@ -139,11 +139,11 @@ function lecturaTXT(){
         });
         var user = file.split(".");
         if(!(user[0] in users)){users[user[0]] = {};}
-        //console.log(users);
+        
         arrayData.forEach(key =>{
-            //console.log(key);
+            
             users[user[0]][key[0]] = parseInt(key[1],'10');
-            //console.log(users);
+            
         });
     });
 

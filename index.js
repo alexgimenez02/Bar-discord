@@ -1,5 +1,3 @@
-//const coll = new Discord.MessageCollector(msg.channel, m => m.author.id === msg.author.id, { time: 10000 });
-
 require("dotenv").config()
 const token = process.env.BOT_TOKEN;
 const Discord = require("discord.js")
@@ -80,9 +78,14 @@ bot.on('message', msg=>{
             });
             
         }else if(msg.content === "!help"){ //Ir actualizando WIP
-            msg.member.send("Esto són los comandos actuales: \n!dale \n!bar \n!foto \n!carta \n!gif \n!mememan ");
+            msg.member.send("Esto són los comandos actuales: \n!dale \n!bar \n!foto \n!carta \n!gif \n!mememan \n!perfil");
         }else if(msg.content === "!foto"){ //Ahora sabemos que puede tener links de fotos y ya sirve, si se borra la foto de internet, se tendra que cambiar
-            var fotos = ["roger.jpg","alex.jpg","mario.jpg","ferranpelo.jpeg","lamapada.jpeg","polpene.jpeg","polangel.jpeg", "NilCalbo.jpeg","arnau-fumao.jpg"];
+            const folder = "Fotos";
+            const fs = require('fs');
+            var fotos = [];
+            fs.readdirSync(folder).forEach(file => {
+                fotos.push(file);
+            });
             msg.channel.send("Aquí tienes tu foto: \n", {files: ["Fotos/"+fotos[(Math.random() * (fotos.length)) << 0]]}); //Para imagenes se tiene que poner el [], sino peta, si quieres ponerlas, ponlas en la carpeta fotos, asi mas facil de acceder ;)
         }else if(msg.content === "!gif"){
             var gifs = ["notfunny.gif","joseph.gif"]

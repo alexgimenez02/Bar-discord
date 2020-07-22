@@ -109,16 +109,20 @@ bot.on('message', msg=>{
                 else{msg.channel.send("Ese meme no lo tenemos, lo siento");}
             });
         }else if(msg.content === "!perfil"){
-            const keys = Object.keys(users[msg.author.username]);
-            const user_dict = users[msg.author.username];
             let embed = new Discord.MessageEmbed();
-            embed.setImage(msg.author.avatarURL());
-            embed.addField("Usuario",msg.author.username);
-            var embedarray = [];
-            for(i = 0;i<keys.length;i++){
-                embedarray[i]=String(keys[i])+" : " +String(user_dict[keys[i]]);
+                embed.setImage(msg.author.avatarURL());
+                embed.addField("Usuario",msg.author.username);
+            if(msg.author.username in users){
+                const keys = Object.keys(users[msg.author.username]);
+                const user_dict = users[msg.author.username];
+                var embedarray = [];
+                for(i = 0;i<keys.length;i++){
+                    embedarray[i]=String(keys[i])+" : " +String(user_dict[keys[i]]);
+                }
+                embed.addField("Bebidas consumidas",embedarray);
+            }else{
+                embed.addField("Bebidas consumidas","Aún no has consumido nada");
             }
-            embed.addField("Bebidas consumidas",embedarray);
             embed.setColor('#275BF0');
             msg.channel.send(embed);
         }
@@ -167,7 +171,7 @@ function lecturaTXT(){ //Lee cada base de datos de cada persona
     fs.readdirSync("Users/").forEach(file => { //Por cada fichero
         
         var actualFile = fs.readFileSync("Users/"+file,{encoding : 'utf8', flag: 'r'}); //Lo lee
-        var data = actualFile.split("\r\n"); //Guarda los datos
+        var data = actualFile.split("\n"); //Guarda los datos
         var arrayData = []; 
         data.forEach(element => {
             var secondData = element.split(":"); //Separa la llave del diccionario de el valor que tiene

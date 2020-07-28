@@ -24,59 +24,33 @@ bot.on('message', msg=>{
         }else if(msg.content === '!bar'){ //Retocar el tema de productos sea un diccionario o un objeto que te devuelva la foto
             var productos = ["Coca-cola","Coca-cola light","Coca-cola Zero","Fanta Naranja", "Fanta Limon","Sprite","Schweppes","Estrella Damm","Voll Damm"];
             msg.reply("Que quieres guapetón?");      
+            const regex = [/coca-? ?cola/gmi,/(coca-? ?cola)? (light)\b/gmi,/(coca-? ?cola)? (zero)\b/gmi,/fanta naranja/gmi,/fanta limon/gmi,/sprite/gmi,/schweppes/gmi,/estrella ?(damm)?/gmi,/voll ?(damm)?/gmi]
             const coll = new Discord.MessageCollector(msg.channel, m => m.author.id === msg.author.id, { time: 5000 });
             coll.on('collect',msg =>{
-                switch(msg.content){ //Quizas un switch sea tope semado, pero algo es algo bro, quizas no lo parece, pero le estoy metiendo ganas a intentar que este trasto funcione
-                    case productos[0]:
-                        msg.channel.send("Aquí tienes: ",{files: ["Bebidas/Cocacola.png"]});
-                        break;
-                    case productos[1]:
-                        msg.channel.send("Aquí tienes: ",{files: ["Bebidas/Cocalight.jpg"]});
-                        break;
-                    case productos[2]:
-                        msg.channel.send("Aquí tienes: ",{files: ["Bebidas/cocacola-zero.png"]});
-                        break;
-                    case productos[3]:
-                        msg.channel.send("Aquí tienes: ",{files: ["Bebidas/Fanta-naranja.png"]});
-                        break;
-                    case productos[4]:
-                        msg.channel.send("Aquí tienes: ",{files: ["Bebidas/fanta-limon.jpg"]});
-                        break;
-                    case productos[5]:
-                        msg.channel.send("Aquí tienes: ",{files: ["Bebidas/sprite.png"]});
-                        break;
-                    case productos[6]:
-                        msg.channel.send("Aquí tienes: ",{files: ["Bebidas/schweppes.png"]});
-                        break;
-                    case productos[7]:
-                        msg.channel.send("Aquí tienes: ",{files: ["Bebidas/estrella-damm.png"]});
-                        break;
-                    case productos[8]:
-                        msg.channel.send("Aquí tienes: ",{files: ["Bebidas/voll-damm.png"]});
-                        break;
-                    default:
-                        msg.reply("De eso no tenemos precioso.");
-                        return;
-                }
-                
-                var bebida = String(msg.content);
-                var user = String(msg.author.username);
-                if(user in users){
-                    var user_dict = users[user];
-                    if(bebida in users[user]){
-                        user_dict[bebida] += 1;
-                    }else{
-                        user_dict[bebida] = 1;
+                regex.forEach(typeRegex =>{
+                    var content = msg.content;
+                    if(typeRegex.test(content)){
+                        var i = regex.indexOf(typeRegex);
+                        msg.channel.send("Aquí tienes: ",{files:["Bebidas/"+productos[i]+".png"]});
+                        var bebida = productos[i];
+                        var user = String(msg.author.username);
+                        if(user in users){
+                            var user_dict = users[user];
+                            if(bebida in users[user]){
+                                user_dict[bebida] += 1;
+                            }else{
+                                user_dict[bebida] = 1;
+                            }
+                        }else{
+                            users[user] = {};
+                            var user_dict = users[user];
+                            user_dict[bebida] = 1;
+                        }
+                    
+                        escrituraArchivo(user,users[user][bebida],bebida);  
                     }
-                }else{
-                    users[user] = {};
-                    var user_dict = users[user];
-                    user_dict[bebida] = 1;
-                }
-                
-                escrituraArchivo(user,users[user][bebida],msg);
-            });
-            
+                });
+            });   
         }else if(msg.content === "!help"){ //Ir actualizando WIP
             msg.member.send("Esto són los comandos actuales: \n!dale \n!bar \n!foto \n!carta \n!gif \n!mememan \n!perfil");
         }else if(msg.content === "!foto"){ //Ahora sabemos que puede tener links de fotos y ya sirve, si se borra la foto de internet, se tendra que cambiar
@@ -138,31 +112,31 @@ bot.on('message', msg=>{
 
 
 
-function escrituraArchivo(user,numero,msg){
+function escrituraArchivo(user,numero,bebida){
     var fs = require("fs"); //Llamada a file system, sin esto no tenemos archivos a escribir
     
     try{ //Si no lee bien el archivo o si tiene algun fallo durante la ejecucion, digamos que petara
         if(fs.existsSync("Users/"+user+".txt")){ //Comprueba si existe (basicamente es una repeticion del try ahora que )
             var file = fs.readFileSync("Users/"+user+".txt", {encoding: "utf8",flag: 'r+'}); //Texto leido y para editar
-            if(file.includes(msg.content)){ //Si la bebida esta incluida en el texto simplemente le suma 1 al numero
+            if(file.includes(bebida)){ //Si la bebida esta incluida en el texto simplemente le suma 1 al numero
                 var splited_file = file.split("\n");
                 var file_string = "";
                 var i = 0; //Esto es para saber cual es el primer elemento, un contador sencillo
                 splited_file.forEach(element =>{ //Esto va añadiendo a cada bebida la cantidad, si ha de ser cambiada, aumenta en 1
                     var keys_value = element.split(":"); 
-                    if(msg.content === keys_value[0]){keys_value[1] = parseInt(keys_value[1],'10') + 1;}
+                    if(bebida === keys_value[0]){keys_value[1] = parseInt(keys_value[1],'10') + 1;}
                     if(i === 0){file_string += keys_value[0]+":"+keys_value[1];}
                     else{file_string += "\n"+ keys_value[0]+":"+keys_value[1];}
                     i = i + 1; //Aumenta el contador, realmente no tiene otro uso que para el primer valor
                 });
                 fs.writeFileSync("Users/"+user+".txt",file_string); //Reescribe el archivo a partir del texto modificado
             }else{
-                file += "\n"+msg.content+":"+numero; //Sino simplemente añade la bebida a la lista de bebidas
+                file += "\n"+bebida+":"+numero; //Sino simplemente añade la bebida a la lista de bebidas
                 fs.writeFileSync("Users/"+user+".txt",file);
             }
         }else{
             console.log("Nuevo usuario usando el bar"); //Si es un nuevo usuario
-            fs.writeFileSync("Users/"+user+".txt", msg.content + ":" + numero), function(err){ //Crea el fichero con el contenido y el numero
+            fs.writeFileSync("Users/"+user+".txt", bebida + ":" + numero), function(err){ //Crea el fichero con el contenido y el numero
                 if(err) return console.log(err); //Si hay algun error nos lo dice por consola
             }
         }

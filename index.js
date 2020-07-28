@@ -110,19 +110,23 @@ bot.on('message', msg=>{
             });
         }else if(msg.content === "!perfil"){
             let embed = new Discord.MessageEmbed();
-                embed.setImage(msg.author.avatarURL());
-                embed.addField("Usuario",msg.author.username);
+            embed.setImage(msg.author.avatarURL());
+            embed.addField("Usuario",msg.author.username);
             if(msg.author.username in users){
                 const keys = Object.keys(users[msg.author.username]);
                 const user_dict = users[msg.author.username];
                 var embedarray = [];
+                var coste = 0;
                 for(i = 0;i<keys.length;i++){
                     embedarray[i]=String(keys[i])+" : " +String(user_dict[keys[i]]);
+                    coste += parseInt(user_dict[keys[i]],'10') * 1.25;
                 }
                 embed.addField("Bebidas consumidas",embedarray);
+                embed.addField("Dinero gastado: ",String(coste)+'€' );
             }else{
                 embed.addField("Bebidas consumidas","Aún no has consumido nada");
             }
+            
             embed.setColor('#275BF0');
             msg.channel.send(embed);
         }

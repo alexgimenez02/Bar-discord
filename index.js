@@ -1,5 +1,3 @@
-//const coll = new Discord.MessageCollector(msg.channel, m => m.author.id === msg.author.id, { time: 10000 });
-
 require("dotenv").config()
 const token = process.env.BOT_TOKEN;
 const Discord = require("discord.js")
@@ -80,9 +78,14 @@ bot.on('message', msg=>{
             });
             
         }else if(msg.content === "!help"){ //Ir actualizando WIP
-            msg.member.send("Esto són los comandos actuales: \n!dale \n!bar \n!foto \n!carta \n!gif \n!mememan ");
+            msg.member.send("Esto són los comandos actuales: \n!dale \n!bar \n!foto \n!carta \n!gif \n!mememan \n!perfil");
         }else if(msg.content === "!foto"){ //Ahora sabemos que puede tener links de fotos y ya sirve, si se borra la foto de internet, se tendra que cambiar
-            var fotos = ["roger.jpg","alex.jpg","mario.jpg","ferranpelo.jpeg","lamapada.jpeg","polpene.jpeg","polangel.jpeg", "NilCalbo.jpeg","arnau-fumao.jpg"];
+            const folder = "Fotos";
+            const fs = require('fs');
+            var fotos = [];
+            fs.readdirSync(folder).forEach(file => {
+                fotos.push(file);
+            });
             msg.channel.send("Aquí tienes tu foto: \n", {files: ["Fotos/"+fotos[(Math.random() * (fotos.length)) << 0]]}); //Para imagenes se tiene que poner el [], sino peta, si quieres ponerlas, ponlas en la carpeta fotos, asi mas facil de acceder ;)
         }else if(msg.content === "!gif"){
             var gifs = ["notfunny.gif","joseph.gif"]
@@ -105,11 +108,35 @@ bot.on('message', msg=>{
                 else if(msg.content === "!random"){msg.channel.send({files: ["Mememan/"+memes[(Math.random()*memes.length) << 0]]});}
                 else{msg.channel.send("Ese meme no lo tenemos, lo siento");}
             });
-        }else if(msg.author.bot){ return;} //Evita que el bot se responda a si mismo con leer un solo !
+        }else if(msg.content === "!perfil"){
+            let embed = new Discord.MessageEmbed();
+            embed.setImage(msg.author.avatarURL());
+            embed.addField("Usuario",msg.author.username);
+            if(msg.author.username in users){
+                const keys = Object.keys(users[msg.author.username]);
+                const user_dict = users[msg.author.username];
+                var embedarray = [];
+                var coste = 0;
+                for(i = 0;i<keys.length;i++){
+                    embedarray[i]=String(keys[i])+" : " +String(user_dict[keys[i]]);
+                    coste += parseInt(user_dict[keys[i]],'10') * 1.25;
+                }
+                embed.addField("Bebidas consumidas",embedarray);
+                embed.addField("Dinero gastado: ",String(coste)+'€' );
+            }else{
+                embed.addField("Bebidas consumidas","Aún no has consumido nada");
+            }
+            
+            embed.setColor('#275BF0');
+            msg.channel.send(embed);
+        }
+        else if(msg.author.bot){ return;} //Evita que el bot se responda a si mismo con leer un solo !
         else if(msg.mentions){return;}
         else{msg.reply("lo siento, no es un comando válido, gilipollas");}
     }
 })
+
+
 
 function escrituraArchivo(user,numero,msg){
     var fs = require("fs"); //Llamada a file system, sin esto no tenemos archivos a escribir
@@ -148,7 +175,7 @@ function lecturaTXT(){ //Lee cada base de datos de cada persona
     fs.readdirSync("Users/").forEach(file => { //Por cada fichero
         
         var actualFile = fs.readFileSync("Users/"+file,{encoding : 'utf8', flag: 'r'}); //Lo lee
-        var data = actualFile.split("\r\n"); //Guarda los datos
+        var data = actualFile.split("\n"); //Guarda los datos
         var arrayData = []; 
         data.forEach(element => {
             var secondData = element.split(":"); //Separa la llave del diccionario de el valor que tiene

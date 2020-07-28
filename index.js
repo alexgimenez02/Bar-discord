@@ -24,7 +24,7 @@ bot.on('message', msg=>{
         }else if(msg.content === '!bar'){ //Retocar el tema de productos sea un diccionario o un objeto que te devuelva la foto
             var productos = ["Coca-cola","Coca-cola light","Coca-cola Zero","Fanta Naranja", "Fanta Limon","Sprite","Schweppes","Estrella Damm","Voll Damm"];
             msg.reply("Que quieres guapetón?");      
-            const regex = [/coca-? ?cola/gmi,/(coca-? ?cola)? (light)\b/gmi,/(coca-? ?cola)? (zero)\b/gmi,/fanta naranja/gmi,/fanta limon/gmi,/sprite/gmi,/schweppes/gmi,/estrella ?(damm)?/gmi,/voll ?(damm)?/gmi]
+            const regex = [/coca-? ?cola/gmi,/(coca-? ?cola)? (light)\b/gmi,/(coca-? ?cola)? (zero)\b/gmi,/fanta (naranja)\b/gmi,/fanta (limon\b)/gmi,/sprite/gmi,/schweppes/gmi,/estrella ?(damm)?/gmi,/voll ?(damm)?/gmi]
             const coll = new Discord.MessageCollector(msg.channel, m => m.author.id === msg.author.id, { time: 5000 });
             coll.on('collect',msg =>{
                 regex.forEach(typeRegex =>{

@@ -1,6 +1,4 @@
-Coca-cola:8
+Coca-cola:5
 Voll Damm:2
 Estrella Damm:1
-Coca-cola light:3
-Fanta limon:1
-Coca-cola Zero:5
+Coca-cola light:1

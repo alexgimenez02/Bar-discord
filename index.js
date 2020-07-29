@@ -13,7 +13,7 @@ bot.on('ready', () =>{
 
 bot.on('message', msg=>{
     if(msg.content.includes("!")){
-        if(msg.content === "!dale"){ //Esto lo quitaria o hauria algo diferente
+        if(msg.content === "!dale"){ //Esto lo quitaria o haria algo diferente
             msg.reply('No digas pito');     
             const coll = new Discord.MessageCollector(msg.channel, m => m.author.id === msg.author.id, { time: 100000 });        
             coll.on('collect',msg =>{
@@ -22,9 +22,9 @@ bot.on('message', msg=>{
                 }
             })
         }else if(msg.content === '!bar'){ //Retocar el tema de productos sea un diccionario o un objeto que te devuelva la foto
-            var productos = ["Coca-cola","Coca-cola light","Coca-cola Zero","Fanta Naranja", "Fanta Limon","Sprite","Schweppes","Estrella Damm","Voll Damm"];
+            var productos = ["Coca-cola","Coca-cola light","Coca-cola Zero","Fanta Naranja","Fanta Limon","Sprite","Schweppes","Estrella Damm","Voll Damm","Aquarius Limon","Aquarius Naranja","Agua"];
             msg.reply("Que quieres guapetón?");      
-            const regex = [/coca-? ?cola/gmi,/(coca-? ?cola)? (light)\b/gmi,/(coca-? ?cola)? (zero)\b/gmi,/fanta (naranja)\b/gmi,/fanta (limon\b)/gmi,/sprite/gmi,/schweppes/gmi,/estrella ?(damm)?/gmi,/voll ?(damm)?/gmi]
+            const regex = [/coca-? ?cola/gmi,/(coca-? ?cola)? (light)\b/gmi,/(coca-? ?cola)? (zero)\b/gmi,/fanta (naranja)\b/gmi,/fanta (limon\b)/gmi,/sprite/gmi,/schweppes/gmi,/estrella ?(damm)?/gmi,/voll ?(damm)?/gmi,/aquarius ?(limon)\b/gmi,/aquarius ?(naranja)\b/gmi,/agua/gmi]
             const coll = new Discord.MessageCollector(msg.channel, m => m.author.id === msg.author.id, { time: 5000 });
             coll.on('collect',msg =>{
                 regex.forEach(typeRegex =>{
@@ -64,7 +64,7 @@ bot.on('message', msg=>{
         }else if(msg.content === "!gif"){
             var gifs = ["notfunny.gif","joseph.gif"]
             msg.channel.send("Aquí tienes tu gif: \n",{files: ["Gifs/"+gifs[(Math.random() * (gifs.length)) << 0]]} )
-        }else if(msg.content === "!carta"){msg.channel.send("Esto es lo que tenemos: Coca-cola, Coca-cola light, Coca-cola Zero, Fanta Naranja, Fanta Limon, Sprite, Schweppes, Estrella Damm y Voll Damm.");}
+        }else if(msg.content === "!carta"){msg.channel.send("Esto es lo que tenemos: Coca-cola, Coca-cola light, Coca-cola Zero, Fanta de naranja, Fanta de limon, Sprite, Schweppes, Estrella Damm y Voll Damm, Aquarius de limon, Aquarius de naranja o una agüita fresquita.");}
         else if(msg.content === "!mememan"){
             const folder = 'Mememan';
             const fs = require('fs');

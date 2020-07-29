@@ -13,100 +13,112 @@ bot.on('ready', () =>{
 
 bot.on('message', msg=>{
     if(msg.content.includes("!")){
-        if(msg.content === "!dale"){ //Esto lo quitaria o haria algo diferente
-            msg.reply('No digas pito');     
-            const coll = new Discord.MessageCollector(msg.channel, m => m.author.id === msg.author.id, { time: 100000 });        
-            coll.on('collect',msg =>{
-                if(msg.content === "pito"){
-                    msg.channel.send('Marrano');
-                }
-            })
-        }else if(msg.content === '!bar'){ //Retocar el tema de productos sea un diccionario o un objeto que te devuelva la foto
-            var productos = ["Coca-cola","Coca-cola light","Coca-cola Zero","Fanta Naranja","Fanta Limon","Sprite","Schweppes","Estrella Damm","Voll Damm","Aquarius Limon","Aquarius Naranja","Agua"];
-            msg.reply("Que quieres guapetón?");      
-            const regex = [/coca-? ?cola/gmi,/(coca-? ?cola)? (light)\b/gmi,/(coca-? ?cola)? (zero)\b/gmi,/fanta (naranja)\b/gmi,/fanta (limon\b)/gmi,/sprite/gmi,/schweppes/gmi,/estrella ?(damm)?/gmi,/voll ?(damm)?/gmi,/aquarius ?(limon)\b/gmi,/aquarius ?(naranja)\b/gmi,/agua/gmi]
-            const coll = new Discord.MessageCollector(msg.channel, m => m.author.id === msg.author.id, { time: 5000 });
-            coll.on('collect',msg =>{
-                regex.forEach(typeRegex =>{
-                    var content = msg.content;
-                    if(typeRegex.test(content)){
-                        var i = regex.indexOf(typeRegex);
-                        msg.channel.send("Aquí tienes: ",{files:["Bebidas/"+productos[i]+".png"]});
-                        var bebida = productos[i];
-                        var user = String(msg.author.username);
-                        if(user in users){
-                            var user_dict = users[user];
-                            if(bebida in users[user]){
-                                user_dict[bebida] += 1;
-                            }else{
-                                user_dict[bebida] = 1;
-                            }
-                        }else{
-                            users[user] = {};
-                            var user_dict = users[user];
-                            user_dict[bebida] = 1;
-                        }
-                    
-                        escrituraArchivo(user,users[user][bebida],bebida);  
+        switch(msg.content){
+            case "!dale": //Esto lo quitaria o haria algo diferente
+                msg.reply('No digas pito');     
+                const coll = new Discord.MessageCollector(msg.channel, m => m.author.id === msg.author.id, { time: 100000 });        
+                coll.on('collect',msg =>{
+                    if(msg.content === "pito"){
+                        msg.channel.send('Marrano');
                     }
                 });
-            });   
-        }else if(msg.content === "!help"){ //Ir actualizando WIP
-            msg.member.send("Esto són los comandos actuales: \n!dale \n!bar \n!foto \n!carta \n!gif \n!mememan \n!perfil");
-        }else if(msg.content === "!foto"){ //Ahora sabemos que puede tener links de fotos y ya sirve, si se borra la foto de internet, se tendra que cambiar
-            const folder = "Fotos";
-            const fs = require('fs');
-            var fotos = [];
-            fs.readdirSync(folder).forEach(file => {
-                fotos.push(file);
-            });
-            msg.channel.send("Aquí tienes tu foto: \n", {files: ["Fotos/"+fotos[(Math.random() * (fotos.length)) << 0]]}); //Para imagenes se tiene que poner el [], sino peta, si quieres ponerlas, ponlas en la carpeta fotos, asi mas facil de acceder ;)
-        }else if(msg.content === "!gif"){
-            var gifs = ["notfunny.gif","joseph.gif"]
-            msg.channel.send("Aquí tienes tu gif: \n",{files: ["Gifs/"+gifs[(Math.random() * (gifs.length)) << 0]]} )
-        }else if(msg.content === "!carta"){msg.channel.send("Esto es lo que tenemos: Coca-cola, Coca-cola light, Coca-cola Zero, Fanta de naranja, Fanta de limon, Sprite, Schweppes, Estrella Damm y Voll Damm, Aquarius de limon, Aquarius de naranja o una agüita fresquita.");}
-        else if(msg.content === "!mememan"){
-            const folder = 'Mememan';
-            const fs = require('fs');
-            var memes = [];
-            fs.readdirSync(folder).forEach(file => {
-                memes.push(file);
-            });
-            msg.channel.send("Que meme quieres? (envia !cuales para saber que memes hay o envia !random para enviar uno aleatorio)");
-            const coll = new Discord.MessageCollector(msg.channel, m => m.author.id === msg.author.id, { time: 10000 });
-            coll.on('collect',msg =>{
-                if(memes.includes(msg.content)){msg.channel.send({files: ["Mememan/"+msg.content]});}
-                else if(msg.content === "!cuales"){
-                    msg.member.send(memes);
-                    msg.member.send("Copia el meme que quieras enviar al servidor");}
-                else if(msg.content === "!random"){msg.channel.send({files: ["Mememan/"+memes[(Math.random()*memes.length) << 0]]});}
-                else{msg.channel.send("Ese meme no lo tenemos, lo siento");}
-            });
-        }else if(msg.content === "!perfil"){
-            let embed = new Discord.MessageEmbed();
-            embed.setImage(msg.author.avatarURL());
-            embed.addField("Usuario",msg.author.username);
-            if(msg.author.username in users){
-                const keys = Object.keys(users[msg.author.username]);
-                const user_dict = users[msg.author.username];
-                var embedarray = [];
-                var coste = 0;
-                for(i = 0;i<keys.length;i++){
-                    embedarray[i]=String(keys[i])+" : " +String(user_dict[keys[i]]);
-                    coste += parseInt(user_dict[keys[i]],'10') * 1.25;
+                break;
+            case "!bar": //Retocar el tema de productos sea un diccionario o un objeto que te devuelva la foto
+                var productos = ["Coca-cola","Coca-cola light","Coca-cola Zero","Fanta Naranja","Fanta Limon","Sprite","Schweppes","Estrella Damm","Voll Damm","Aquarius Limon","Aquarius Naranja","Agua"];
+                msg.reply("Que quieres guapetón?");      
+                const regex = [/coca-? ?cola/gmi,/(coca-? ?cola)? (light)\b/gmi,/(coca-? ?cola)? (zero)\b/gmi,/fanta (naranja)\b/gmi,/fanta (limon\b)/gmi,/sprite/gmi,/schweppes/gmi,/estrella ?(damm)?/gmi,/voll ?(damm)?/gmi,/aquarius ?(limon)\b/gmi,/aquarius ?(naranja)\b/gmi,/agua/gmi]
+                const coll = new Discord.MessageCollector(msg.channel, m => m.author.id === msg.author.id, { time: 10000 });
+                coll.on('collect',msg =>{
+                    regex.forEach(typeRegex =>{
+                        var content = msg.content;
+                        if(typeRegex.test(content)){
+                            var i = regex.indexOf(typeRegex);
+                            msg.channel.send("Aquí tienes: ",{files:["Bebidas/"+productos[i]+".png"]});
+                            var bebida = productos[i];
+                            var user = String(msg.author.username);
+                            if(user in users){
+                                var user_dict = users[user];
+                                if(bebida in users[user]){
+                                    user_dict[bebida] += 1;
+                                }else{
+                                    user_dict[bebida] = 1;
+                                }
+                            }else{
+                                users[user] = {};
+                                var user_dict = users[user];
+                                user_dict[bebida] = 1;
+                            }
+                        
+                            escrituraArchivo(user,users[user][bebida],bebida);  
+                        }
+                    });
+                });   
+                break;
+            case "!help": //Ir actualizando WIP
+                msg.member.send("Esto són los comandos actuales: \n!dale \n!bar \n!foto \n!carta \n!gif \n!mememan \n!perfil");
+                break;
+            case "!foto": //Ahora sabemos que puede tener links de fotos y ya sirve, si se borra la foto de internet, se tendra que cambiar
+                const folder = "Fotos";
+                const fs = require('fs');
+                var fotos = [];
+                fs.readdirSync(folder).forEach(file => {
+                    fotos.push(file);
+                });
+                msg.channel.send("Aquí tienes tu foto: \n", {files: ["Fotos/"+fotos[(Math.random() * (fotos.length)) << 0]]}); //Para imagenes se tiene que poner el [], sino peta, si quieres ponerlas, ponlas en la carpeta fotos, asi mas facil de acceder ;)
+                break;
+            case "!gif":
+                var gifs = ["notfunny.gif","joseph.gif"]
+                msg.channel.send("Aquí tienes tu gif: \n",{files: ["Gifs/"+gifs[(Math.random() * (gifs.length)) << 0]]} )
+                break;
+            case "!carta":
+                msg.channel.send("Esto es lo que tenemos: Coca-cola, Coca-cola light, Coca-cola Zero, Fanta de naranja, Fanta de limon, Sprite, Schweppes, Estrella Damm y Voll Damm, Aquarius de limon, Aquarius de naranja o una agüita fresquita.");
+                break;
+            case "!mememan":
+                const folder = 'Mememan';
+                const fs = require('fs');
+                var memes = [];
+                fs.readdirSync(folder).forEach(file => {
+                    memes.push(file);
+                });
+                msg.channel.send("Que meme quieres? (envia !cuales para saber que memes hay o envia !random para enviar uno aleatorio)");
+                const coll = new Discord.MessageCollector(msg.channel, m => m.author.id === msg.author.id, { time: 10000 });
+                coll.on('collect',msg =>{
+                    if(memes.includes(msg.content)){msg.channel.send({files: ["Mememan/"+msg.content]});}
+                    else if(msg.content === "!cuales"){
+                        msg.member.send(memes);
+                        msg.member.send("Copia el meme que quieras enviar al servidor");}
+                    else if(msg.content === "!random"){msg.channel.send({files: ["Mememan/"+memes[(Math.random()*memes.length) << 0]]});}
+                    else{msg.channel.send("Ese meme no lo tenemos, lo siento");}
+                });
+                break;
+            case "!perfil":
+                let embed = new Discord.MessageEmbed();
+                embed.setImage(msg.author.avatarURL());
+                embed.addField("Usuario",msg.author.username);
+                if(msg.author.username in users){
+                    const keys = Object.keys(users[msg.author.username]);
+                    const user_dict = users[msg.author.username];
+                    var embedarray = [];
+                    var coste = 0;
+                    for(i = 0;i<keys.length;i++){
+                        embedarray[i]=String(keys[i])+" : " +String(user_dict[keys[i]]);
+                        coste += parseInt(user_dict[keys[i]],'10') * 1.25;
+                    }
+                    embed.addField("Bebidas consumidas",embedarray);
+                    embed.addField("Dinero gastado: ",String(coste)+'€' );
+                }else{
+                    embed.addField("Bebidas consumidas","Aún no has consumido nada");
                 }
-                embed.addField("Bebidas consumidas",embedarray);
-                embed.addField("Dinero gastado: ",String(coste)+'€' );
-            }else{
-                embed.addField("Bebidas consumidas","Aún no has consumido nada");
-            }
-            
-            embed.setColor('#275BF0');
-            msg.channel.send(embed);
+                
+                embed.setColor('#275BF0');
+                msg.channel.send(embed);
+                break;
+            default:
+                msg.reply("Lo siento, no es un comando válido, gilipollas");
+                break;
         }
-        else if(msg.author.bot){ return;} //Evita que el bot se responda a si mismo con leer un solo !
+        if(msg.author.bot){ return;} //Evita que el bot se responda a si mismo con leer un solo !
         else if(msg.mentions){return;}
-        else{msg.reply("lo siento, no es un comando válido, gilipollas");}
     }
 })
 

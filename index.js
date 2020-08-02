@@ -3,7 +3,7 @@ const token = process.env.BOT_TOKEN;
 const Discord = require("discord.js")
 
 const bot = new Discord.Client();
-
+const fs = require('fs');
 
 var users = lecturaTXT();
 
@@ -15,11 +15,13 @@ bot.on('message', msg=>{
     if(msg.content.includes("!")){
         switch(msg.content){
             case "!dale": //Esto lo quitaria o haria algo diferente
-                msg.reply('No digas pito');     
-                const coll = new Discord.MessageCollector(msg.channel, m => m.author.id === msg.author.id, { time: 100000 });        
+                msg.reply('No digas pito');
+        
+                var coll = new Discord.MessageCollector(msg.channel, m => m.author.id === msg.author.id, { time: 100000 });        
                 coll.on('collect',msg =>{
                     if(msg.content === "pito"){
                         msg.channel.send('Marrano');
+
                     }
                 });
                 break;
@@ -27,7 +29,7 @@ bot.on('message', msg=>{
                 var productos = ["Coca-cola","Coca-cola light","Coca-cola Zero","Fanta Naranja","Fanta Limon","Sprite","Schweppes","Estrella Damm","Voll Damm","Aquarius Limon","Aquarius Naranja","Agua"];
                 msg.reply("Que quieres guapetón?");      
                 const regex = [/coca-? ?cola/gmi,/(coca-? ?cola)? (light)\b/gmi,/(coca-? ?cola)? (zero)\b/gmi,/fanta (naranja)\b/gmi,/fanta (limon\b)/gmi,/sprite/gmi,/schweppes/gmi,/estrella ?(damm)?/gmi,/voll ?(damm)?/gmi,/aquarius ?(limon)\b/gmi,/aquarius ?(naranja)\b/gmi,/agua/gmi]
-                const coll = new Discord.MessageCollector(msg.channel, m => m.author.id === msg.author.id, { time: 10000 });
+                coll = new Discord.MessageCollector(msg.channel, m => m.author.id === msg.author.id, { time: 10000 });
                 coll.on('collect',msg =>{
                     regex.forEach(typeRegex =>{
                         var content = msg.content;
@@ -56,10 +58,10 @@ bot.on('message', msg=>{
                 break;
             case "!help": //Ir actualizando WIP
                 msg.member.send("Esto són los comandos actuales: \n!dale \n!bar \n!foto \n!carta \n!gif \n!mememan \n!perfil");
+
                 break;
             case "!foto": //Ahora sabemos que puede tener links de fotos y ya sirve, si se borra la foto de internet, se tendra que cambiar
-                const folder = "Fotos";
-                const fs = require('fs');
+                var folder = "Fotos";
                 var fotos = [];
                 fs.readdirSync(folder).forEach(file => {
                     fotos.push(file);
@@ -74,14 +76,14 @@ bot.on('message', msg=>{
                 msg.channel.send("Esto es lo que tenemos: Coca-cola, Coca-cola light, Coca-cola Zero, Fanta de naranja, Fanta de limon, Sprite, Schweppes, Estrella Damm y Voll Damm, Aquarius de limon, Aquarius de naranja o una agüita fresquita.");
                 break;
             case "!mememan":
-                const folder = 'Mememan';
-                const fs = require('fs');
+                folder = 'Mememan';
+                
                 var memes = [];
                 fs.readdirSync(folder).forEach(file => {
                     memes.push(file);
                 });
                 msg.channel.send("Que meme quieres? (envia !cuales para saber que memes hay o envia !random para enviar uno aleatorio)");
-                const coll = new Discord.MessageCollector(msg.channel, m => m.author.id === msg.author.id, { time: 10000 });
+                coll = new Discord.MessageCollector(msg.channel, m => m.author.id === msg.author.id, { time: 10000 });
                 coll.on('collect',msg =>{
                     if(memes.includes(msg.content)){msg.channel.send({files: ["Mememan/"+msg.content]});}
                     else if(msg.content === "!cuales"){
@@ -114,15 +116,17 @@ bot.on('message', msg=>{
                 msg.channel.send(embed);
                 break;
             default:
-                msg.reply("Lo siento, no es un comando válido, gilipollas");
+                if(msg.author.bot){ return;} //Evita que el bot se responda a si mismo con leer un solo !
+                else if(msg.mentions){return;}
+                else{
+                    msg.reply("Lo siento, no es un comando válido, gilipollas");
+                }
                 break;
         }
-        if(msg.author.bot){ return;} //Evita que el bot se responda a si mismo con leer un solo !
-        else if(msg.mentions){return;}
+        
+        
     }
 })
-
-
 
 function escrituraArchivo(user,numero,bebida){
     var fs = require("fs"); //Llamada a file system, sin esto no tenemos archivos a escribir

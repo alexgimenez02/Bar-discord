@@ -2,6 +2,8 @@ require("dotenv").config()
 const token = process.env.BOT_TOKEN;
 const Discord = require("discord.js")
 
+
+
 const bot = new Discord.Client();
 const fs = require('fs');
 
@@ -180,5 +182,4 @@ function lecturaTXT(){ //Lee cada base de datos de cada persona
     });
     return users; //Devuelve el diccionario
 }
-
 bot.login(token);

@@ -117,6 +117,10 @@ bot.on('message', msg=>{
                 embed.setColor('#275BF0');
                 msg.channel.send(embed);
                 break;
+            case "!spam":
+                msg.channel.send("Nice try bitch");
+                //setInterval(() => msg.channel.send("Spam!"),2000);
+                break;
             default:
                 if(msg.author.bot){ return;} //Evita que el bot se responda a si mismo con leer un solo !
                 else if(msg.mentions){return;}
@@ -125,11 +129,9 @@ bot.on('message', msg=>{
                 }
                 break;
         }
-        
-        
     }
 })
-
+/**/
 function escrituraArchivo(user,numero,bebida){
     var fs = require("fs"); //Llamada a file system, sin esto no tenemos archivos a escribir
     
@@ -182,4 +184,5 @@ function lecturaTXT(){ //Lee cada base de datos de cada persona
     });
     return users; //Devuelve el diccionario
 }
+/**/
 bot.login(token);
